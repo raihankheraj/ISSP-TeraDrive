@@ -102,4 +102,75 @@ void SetupWBEM(IWbemLocator*& pLoc, IWbemServices*& pSvc)
 
     if (FAILED(hres))
     {
-      
+       cout << "Could not set proxy blanket. Error code = 0x" << hex << hres << endl;
+        pSvc->Release();
+        pLoc->Release();
+        CoUninitialize();
+    }
+
+}
+
+
+int main()
+{
+    IWbemLocator *wbemLocator = NULL;
+    IWbemServices *wbemServices = NULL;
+
+    IntializeCOM();
+    SetupWBEM(wbemLocator, wbemServices);
+
+    IEnumWbemClassObject* storageEnumerator = NULL;
+    HRESULT hres = wbemServices->ExecQuery(
+        bstr_t("WQL"),
+        bstr_t("SELECT * FROM MSFT_PhysicalDisk"),
+        WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
+        NULL,
+        &storageEnumerator);
+
+    if (FAILED(hres))
+    {
+        cout << "Query for MSFT_PhysicalDisk. Error code = 0x" << hex << hres << endl;
+        wbemServices->Release();
+        wbemLocator->Release();
+        CoUninitialize();
+    }
+
+    IWbemClassObject *storageWbemObject = NULL;
+    ULONG uReturn = 0;
+
+    vector<StorageDevice> storageDevices;
+
+    while (storageEnumerator)
+    {
+        HRESULT hr = storageEnumerator->Next(WBEM_INFINITE, 1, &storageWbemObject, &uReturn);
+        if (0 == uReturn || hr != S_OK)
+        {
+            break;
+        }
+
+        StorageDevice storageDevice;
+
+        VARIANT deviceId;
+        VARIANT busType;
+        VARIANT healthStatus;
+        VARIANT spindleSpeed;
+        VARIANT mediaType;
+
+        storageWbemObject->Get(L"DeviceId", 0, &deviceId, 0, 0);
+        storageWbemObject->Get(L"BusType", 0, &busType, 0, 0);
+        storageWbemObject->Get(L"HealthStatus", 0, &healthStatus, 0, 0);
+        storageWbemObject->Get(L"SpindleSpeed", 0, &spindleSpeed, 0, 0);
+        storageWbemObject->Get(L"MediaType", 0, &mediaType, 0, 0);
+
+        storageDevice.DeviceId = deviceId.bstrVal == NULL ? "" : _bstr_t(deviceId.bstrVal);
+        storageDevice.BusType = busType.uintVal;
+        storageDevice.HealthStatus = healthStatus.uintVal;
+        storageDevice.SpindleSpeed = spindleSpeed.uintVal;
+        storageDevice.MediaType = mediaType.uintVal;
+
+        storageDevices.push_back(storageDevice);
+        storageWbemObject->Release();
+    }
+
+
+}
