@@ -1,10 +1,13 @@
 #include "SmartReader.h"
 
+#include "Common.h"
+#include "CTracer.h"
+
 
 #define OUT_BUFFER_SIZE		IDENTIFY_BUFFER_SIZE+16
-
 #define DRIVE_HEAD_REG		0xA0
 
+extern CTracer g_objTracer;
 
 CSmartReader::CSmartReader()
 {
@@ -31,6 +34,8 @@ VOID CSmartReader::CloseAll()
 
 BOOL CSmartReader::ReadSMARTValuesForAllDrives()
 {
+	DF_TRACE_LOG(L"CSmartReader::ReadSMARTValuesForAllDrives() - ENTER");
+
 	BOOL bFlag = 0;
 	char szDrv[MAX_PATH] = { 0 };
 	BYTE ucDriveIndex = 0;
@@ -43,6 +48,8 @@ BOOL CSmartReader::ReadSMARTValuesForAllDrives()
 	// Retrieves a bitmask representing the currently available disk drives
 	//
 	DWORD dwBits = GetLogicalDrives();
+
+	DF_TRACE_LOG(L"CSmartReader::ReadSMARTValuesForAllDrives() - GetLogicalDrives() returned = 0x%08x", dwBits);
 
 	if (0 == dwBits)
 	{
@@ -67,10 +74,14 @@ BOOL CSmartReader::ReadSMARTValuesForAllDrives()
 			//
 			UINT uiDriveType = GetDriveType(szDrv);
 
+			PrintDriveType(uiDriveType);
+
 			switch (uiDriveType)
 			{
 			case DRIVE_FIXED:
 			{
+				DF_TRACE_LOG(L"CSmartReader::ReadSMARTValuesForAllDrives() - DRIVE_FIXED - Drive=%S", szDrv);
+
 				ucDriveIndex = ucT2 - 2;
 
 				if (ReadSMARTInfo(ucDriveIndex))
@@ -83,6 +94,7 @@ BOOL CSmartReader::ReadSMARTValuesForAllDrives()
 			}
 			default:
 			{
+				DF_TRACE_LOG(L"CSmartReader::ReadSMARTValuesForAllDrives() - SKIPPING - Drive=%S", szDrv);
 				break;
 			}
 			}
@@ -99,11 +111,15 @@ BOOL CSmartReader::ReadSMARTValuesForAllDrives()
 		bRet = TRUE;
 	}
 
+	DF_TRACE_LOG(L"CSmartReader::ReadSMARTValuesForAllDrives() - EXIT");
+
 	return bRet;
 }
 
 BOOL CSmartReader::ReadSMARTInfo(BYTE ucDriveIndex)
 {
+	DF_TRACE_LOG(L"CSmartReader::ReadSMARTInfo() - ENTER");
+
 	HANDLE hPhysicalDriveIOCTL = NULL;
 	char szDriveName[MAX_PATH] = { 0 };
 	BOOL bRet = FALSE;
@@ -113,6 +129,8 @@ BOOL CSmartReader::ReadSMARTInfo(BYTE ucDriveIndex)
 	//  Try to get a handle to PhysicalDrive IOCTL, report failure and exit if can't.
 	//
 	wsprintf(szDriveName, "\\\\.\\PhysicalDrive%d", ucDriveIndex);
+
+	DF_TRACE_LOG(L"CSmartReader::ReadSMARTInfo() - DriveName=%S", szDriveName);
 
 	hPhysicalDriveIOCTL = CreateFile(
 		szDriveName,
@@ -144,7 +162,7 @@ BOOL CSmartReader::ReadSMARTInfo(BYTE ucDriveIndex)
 			&cbBytesReturned,
 			NULL))
 		{
-			//std::cout << "DeviceIoControl(SMART_GET_VERSION) FAILED with an Error Code = " << std::showbase << std::hex << ::GetLastError() << std::dec << std::endl;
+			DF_ERROR_LOG(L"DeviceIoControl(SMART_GET_VERSION) FAILED with an Error Code = ", ::GetLastError());
 
 			// Try a different way
 			//
@@ -160,13 +178,13 @@ BOOL CSmartReader::ReadSMARTInfo(BYTE ucDriveIndex)
 				&cbBytesReturned,
 				NULL))
 			{
-				//std::cout << "DeviceIoControl(DFP_GET_VERSION) FAILED with an Error Code = " << std::showbase << std::hex << ::GetLastError() << std::dec << std::endl;
+				DF_ERROR_LOG(L"DeviceIoControl(DFP_GET_VERSION) FAILED with an Error Code = ", ::GetLastError());
 			}
 			else
 			{
-				//std::cout << "Version number of the binary driver = " << static_cast<int>(m_stDrivesInfo[ucDriveIndex].m_stGVIP.bVersion) << std::endl;
-				//std::cout << "Revision number of the binary driver = " << static_cast<int>(m_stDrivesInfo[ucDriveIndex].m_stGVIP.bRevision) << std::endl;
-				//std::cout << "Device map = " << static_cast<int>(m_stDrivesInfo[ucDriveIndex].m_stGVIP.bIDEDeviceMap) << std::endl;
+				DF_TRACE_LOG(L"Version number of the binary driver = %lu", m_stDrivesInfo[ucDriveIndex].m_stGVIP.bVersion);
+				DF_TRACE_LOG(L"Revision number of the binary driver = %lu", m_stDrivesInfo[ucDriveIndex].m_stGVIP.bRevision);
+				DF_TRACE_LOG(L"Device map = 0x%08x", m_stDrivesInfo[ucDriveIndex].m_stGVIP.bIDEDeviceMap);
 			}
 		}
 		else
@@ -174,13 +192,13 @@ BOOL CSmartReader::ReadSMARTInfo(BYTE ucDriveIndex)
 			// Get the version, etc of PhysicalDrive IOCTL
 			memcpy((void*)&(m_stDrivesInfo[ucDriveIndex].m_stGVIP), (void*)&gvip, sizeof(GETVERSIONINPARAMS));
 
-			//std::cout << "Version number of the binary driver = " << static_cast<int>(m_stDrivesInfo[ucDriveIndex].m_stGVIP.bVersion) << std::endl;
-			//std::cout << "Revision number of the binary driver = " << static_cast<int>(m_stDrivesInfo[ucDriveIndex].m_stGVIP.bRevision) << std::endl;
-			//std::cout << "Device map = " << static_cast<int>(m_stDrivesInfo[ucDriveIndex].m_stGVIP.bIDEDeviceMap) << std::endl;
+			DF_TRACE_LOG(L"Version number of the binary driver = %lu", m_stDrivesInfo[ucDriveIndex].m_stGVIP.bVersion);
+			DF_TRACE_LOG(L"Revision number of the binary driver = %lu", m_stDrivesInfo[ucDriveIndex].m_stGVIP.bRevision);
+			DF_TRACE_LOG(L"Device map = 0x%08x", m_stDrivesInfo[ucDriveIndex].m_stGVIP.bIDEDeviceMap);
 
 			if ((m_stDrivesInfo[ucDriveIndex].m_stGVIP.fCapabilities & CAP_SMART_CMD) == CAP_SMART_CMD)
 			{
-				//std::cout << "Device supports SMART commands" << std::endl;
+				DF_TRACE_LOG(L"Device supports SMART commands");
 
 				if (IsSmartEnabled(hPhysicalDriveIOCTL, ucDriveIndex))
 				{
@@ -191,11 +209,11 @@ BOOL CSmartReader::ReadSMARTInfo(BYTE ucDriveIndex)
 			}
 			else if ((m_stDrivesInfo[ucDriveIndex].m_stGVIP.fCapabilities & CAP_ATA_ID_CMD) == CAP_ATA_ID_CMD)
 			{
-				//std::cout << "Device supports ATA ID command command" << std::endl;
+				DF_TRACE_LOG(L"Device supports ATA ID command command");
 			}
 			else if ((m_stDrivesInfo[ucDriveIndex].m_stGVIP.fCapabilities & CAP_ATAPI_ID_CMD) == CAP_ATAPI_ID_CMD)
 			{
-				//std::cout << "Device supports ATAPI ID command" << std::endl;
+				DF_TRACE_LOG(L"Device supports ATAPI ID command");
 			}
 		}
 
@@ -203,14 +221,18 @@ BOOL CSmartReader::ReadSMARTInfo(BYTE ucDriveIndex)
 	}
 	else
 	{
-		//std::cout << "DeviceIoControl(SMART_GET_VERSION) FAILED with an Error Code = " << std::showbase << std::hex << ::GetLastError() << std::dec << std::endl;
+		DF_ERROR_LOG(L"CreateFile(SMART_GET_VERSION) FAILED with an Error Code = ", ::GetLastError());
 	}
+
+	DF_TRACE_LOG(L"CSmartReader::ReadSMARTInfo() - EXIT");
 
 	return bRet;
 }
 
 BOOL CSmartReader::IsSmartEnabled(HANDLE hDevice, UCHAR ucDriveIndex)
 {
+	DF_TRACE_LOG(L"CSmartReader::IsSmartEnabled() - ENTER");
+
 	SENDCMDINPARAMS stCIP = { 0 };
 	SENDCMDOUTPARAMS stCOP = { 0 };
 	DWORD dwRet = 0;
@@ -236,19 +258,24 @@ BOOL CSmartReader::IsSmartEnabled(HANDLE hDevice, UCHAR ucDriveIndex)
 		&dwRet,
 		NULL))
 	{
+		DF_ERROR_LOG(L"DeviceIoControl(SMART_SEND_DRIVE_COMMAND) FAILED with an Error Code = ", ::GetLastError());
 		m_stDrivesInfo[ucDriveIndex].m_csErrorString.Format("Error %d in reading SMART Enabled flag - SMART_SEND_DRIVE_COMMAND", dwRet);
 	}
 	else
 	{
+		DF_TRACE_LOG(L"CSmartReader::IsSmartEnabled() - DeviceIoControl(SMAR_SEND_DRIVE_COMMAND) completed SUCCESSFULLY");
 		bRet = TRUE;
 	}
 
+	DF_TRACE_LOG(L"CSmartReader::IsSmartEnabled() - EXIT");
 
 	return bRet;
 }
 
 BOOL CSmartReader::CollectDriveInfo(HANDLE hDevice, UCHAR ucDriveIndex)
 {
+	DF_TRACE_LOG(L"CSmartReader::CollectDriveInfo() - ENTER");
+
 	BOOL bRet = FALSE;
 	SENDCMDINPARAMS stCIP = { 0 };
 	DWORD dwRet = 0;
@@ -275,9 +302,12 @@ BOOL CSmartReader::CollectDriveInfo(HANDLE hDevice, UCHAR ucDriveIndex)
 		&dwRet,
 		NULL))
 	{
+		DF_ERROR_LOG(L"DeviceIoControl(SMART_RCV_DRIVE_DATA) FAILED with an Error Code = ", ::GetLastError());
 	}
 	else
 	{
+		DF_TRACE_LOG(L"CSmartReader::IsSmartEnabled() - DeviceIoControl(SMART_RCV_DRIVE_DATA) completed SUCCESSFULLY");
+
 		CopyMemory(&m_stDrivesInfo[ucDriveIndex].m_stInfo, szOutput + 16, sizeof(ST_IDSECTOR));
 
 		ConvertString(m_stDrivesInfo[ucDriveIndex].m_stInfo.sModelNumber, 39);
@@ -286,6 +316,8 @@ BOOL CSmartReader::CollectDriveInfo(HANDLE hDevice, UCHAR ucDriveIndex)
 
 		bRet = TRUE;
 	}
+
+	DF_TRACE_LOG(L"CSmartReader::CollectDriveInfo() - EXIT");
 
 	return bRet;
 }
@@ -447,4 +479,51 @@ BOOL CSmartReader::ReadSMARTAttributes(HANDLE hDevice, UCHAR ucDriveIndex)
 ST_DRIVE_INFO* CSmartReader::GetDriveInfo(BYTE ucDriveIndex)
 {
 	return &m_stDrivesInfo[ucDriveIndex];
+}
+
+void CSmartReader::PrintDriveType(UINT uiDriveType)
+{
+	switch (uiDriveType)
+	{
+	case DRIVE_UNKNOWN:
+	{
+		DF_TRACE_LOG(L"CSmartReader::ReadSMARTValuesForAllDrives() - GetDriveType() returned DRIVE_UNKNOWN (0x%08x)", uiDriveType);
+		break;
+	}
+	case DRIVE_NO_ROOT_DIR:
+	{
+		DF_TRACE_LOG(L"CSmartReader::ReadSMARTValuesForAllDrives() - GetDriveType() returned DRIVE_NO_ROOT_DIR (0x%08x)", uiDriveType);
+		break;
+	}
+	case DRIVE_REMOVABLE:
+	{
+		DF_TRACE_LOG(L"CSmartReader::ReadSMARTValuesForAllDrives() - GetDriveType() returned DRIVE_REMOVABLE (0x%08x)", uiDriveType);
+		break;
+	}
+	case DRIVE_FIXED:
+	{
+		DF_TRACE_LOG(L"CSmartReader::ReadSMARTValuesForAllDrives() - GetDriveType() returned DRIVE_FIXED (0x%08x)", uiDriveType);
+		break;
+	}
+	case DRIVE_REMOTE:
+	{
+		DF_TRACE_LOG(L"CSmartReader::ReadSMARTValuesForAllDrives() - GetDriveType() returned DRIVE_REMOTE (0x%08x)", uiDriveType);
+		break;
+	}
+	case DRIVE_CDROM:
+	{
+		DF_TRACE_LOG(L"CSmartReader::ReadSMARTValuesForAllDrives() - GetDriveType() returned DRIVE_CDROM (0x%08x)", uiDriveType);
+		break;
+	}
+	case DRIVE_RAMDISK:
+	{
+		DF_TRACE_LOG(L"CSmartReader::ReadSMARTValuesForAllDrives() - GetDriveType() returned DRIVE_RAMDISK (0x%08x)", uiDriveType);
+		break;
+	}
+	default:
+	{
+		DF_TRACE_LOG(L"CSmartReader::ReadSMARTValuesForAllDrives() - GetDriveType() returned Unknown value (0x%08x)", uiDriveType);
+		break;
+	}
+	}
 }
