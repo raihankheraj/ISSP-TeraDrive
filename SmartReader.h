@@ -1,18 +1,13 @@
 #pragma once
-//
-// SmartReader.h: interface for the CSmartReader class
-//
 
 #include <windows.h>
+#include <Ntdddisk.h>
+#include <devioctl.h>
 
 #include <iostream>
 #include <string>
 #include <map>
 #include <atlstr.h>
-
-#include <devioctl.h>
-#include <Ntdddisk.h>
-
 
 #define SMART_ATTRIB_RAW_READ_ERROR_RATE					1
 #define SMART_ATTRIB_THROUGHPUT_PERFORMANCE					2
@@ -36,7 +31,7 @@
 #define SMART_ATTRIB_TA_COUNTER_INCREASED					202
 #define SMART_ATTRIB_GSENSE_ERROR_RATE						221
 #define SMART_ATTRIB_POWER_OFF_RETRACT_COUNT				228
-#define MAX_ATTRIBUTES	256
+#define MAX_ATTRIBUTES	                                    256
 
 #define INDEX_ATTRIB_INDEX									0
 #define INDEX_ATTRIB_UNKNOWN1								1
@@ -148,7 +143,7 @@ public:
 
 	BYTE m_ucDrivesWithInfo; // Number of drives with information read
 	BYTE m_ucDrives;// Fixed HDD's
-	ST_DRIVE_INFO m_stDrivesInfo[32];
+	ST_DRIVE_INFO m_stDrivesInfo[16];
 
 private:
 	VOID InitAll();
