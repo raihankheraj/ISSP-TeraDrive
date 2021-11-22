@@ -8,9 +8,8 @@ To run SmartHDD, you must first run Setup.exe to download all the dependency fil
 
 1) Download and run Setup.exe - Allow admin privileges when prompted by the program
 2) Read and agree to the customer liscening agreement
-3) Provide destination folder for SmartHDDGUI.exe and dependency files - default (C:\Program Files (x86)\TeraDrive)
-  - 15.1 MB space required
-*SmartHDDGUI.exe is now in the destination folder*
+3) Provide destination folder for SmartHDDGUI.exe and dependency files - default (C:\Program Files (x86)\TeraDrive) - 15.1 MB space required
+  - *SmartHDDGUI.exe is now in the destination folder*
 
 ## Usage
 After completing the installation steps above, all needed files should be in the destination folder.
@@ -21,13 +20,13 @@ After completing the installation steps above, all needed files should be in the
   - SmartHDDGUI.ini must be in the same folder
 3) Enter your email, first name, and last name to be attached with your entry in the database
 4) Click OK
-*Process is complete - if not SSD and valid HDD entry will be in database*
+  - *Process is complete - if not SSD and valid HDD entry will be in database*
 
 ## Dependencies
--libcrypto-1_1.dll
--libssl-1_1.dll
--mysqlcppconn-9-vs14.dll
--SmartHDDGUI.ini
+  - libcrypto-1_1.dll
+  - libssl-1_1.dll
+  - mysqlcppconn-9-vs14.dll
+  - SmartHDDGUI.ini
 
 
 ## Contact
