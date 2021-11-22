@@ -1,6 +1,6 @@
 # SmartHDD 
 ## About the project
-SmartHDD is a student created C++ program created on Visual Studio for extracting SMART values (196, 197, 198), Model number and Serial number from HDD. 
+SmartHDD is a student created C++ program created on Visual Studio for extracting SMART values (196, 197, 198), model number and serial number from HDD. 
 
 
 ## Setup and Install
