@@ -16,7 +16,7 @@ After completing the installation steps above, all needed files should be in the
 *SmartHDDGUI.exe and SmartHDDGUI.ini must be in the same folder and have matching names when running the program*
 
 1) Navigate to the destination folder specified in the setup and installation
-2) Run SmartHDDGUI.exe - Allow admin privileges when prompted by the program - SmartHDDGUI.ini must be in the same folder
+2) Run SmartHDDGUI.exe - Allow admin privileges when prompted by the program - Ensure SmartHDDGUI.ini is in the same folder
 3) Enter your email, first name, and last name to be attached with your entry in the database
 4) Click OK
 *The Process is complete - if not SSD and valid HDD entry will be in database*
