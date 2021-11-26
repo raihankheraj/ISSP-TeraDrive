@@ -248,8 +248,6 @@ BOOL CSmartReader::IsSmartEnabled(HANDLE hDevice, UCHAR ucDriveIndex)
 	stCIP.irDriveRegs.bDriveHeadReg = DRIVE_HEAD_REG;
 	stCIP.irDriveRegs.bCommandReg = SMART_CMD;
 
-	// determind wheter is SMART enable on the drive
-
 	if (!DeviceIoControl(
 		hDevice,
 		SMART_SEND_DRIVE_COMMAND,
@@ -294,8 +292,6 @@ BOOL CSmartReader::CollectDriveInfo(HANDLE hDevice, UCHAR ucDriveIndex)
 	stCIP.irDriveRegs.bDriveHeadReg = DRIVE_HEAD_REG;
 	stCIP.irDriveRegs.bCommandReg = ID_CMD;
 
-	// Collect drive info, Drive number, Model number, Serial number
-
 	if (!DeviceIoControl(
 		hDevice,
 		SMART_RCV_DRIVE_DATA,
@@ -328,7 +324,6 @@ BOOL CSmartReader::CollectDriveInfo(HANDLE hDevice, UCHAR ucDriveIndex)
 
 VOID CSmartReader::ConvertString(PBYTE pString, DWORD cbData)
 {
-	// convert string to data
 	CString csT1;
 	char szT1[MAX_PATH] = { 0 };
 	for (DWORD nC1 = 0; nC1 < cbData; nC1 += 2)
@@ -353,7 +348,6 @@ VOID CSmartReader::FillAttribGenericDetails()
 	szINIFileName[lstrlen(szINIFileName) - 3] = 0;
 	lstrcat(szINIFileName, "ini");
 
-	// fill attributes generica details with Attrib, Id, Critical, Name, and Details
 
 	nSmartAttribs = GetPrivateProfileInt("General", "Max Attributes", 0, szINIFileName);
 	for (nC1 = 0; nC1 < nSmartAttribs; ++nC1)
@@ -374,7 +368,6 @@ ST_SMART_DETAILS* CSmartReader::GetSMARTDetails(BYTE ucAttribIndex)
 	SMARTDETAILSMAP::iterator pIt;
 	ST_SMART_DETAILS* pRet = NULL;
 
-	// get SMART details 
 	pIt = m_oSMARTDetails.find(ucAttribIndex);
 	if (pIt != m_oSMARTDetails.end())
 		pRet = &pIt->second;
@@ -387,7 +380,6 @@ ST_SMART_INFO* CSmartReader::GetSMARTValue(BYTE ucDriveIndex, BYTE ucAttribIndex
 	SMARTINFOMAP::iterator pIt;
 	ST_SMART_INFO* pRet = NULL;
 
-	// get SMART values
 	pIt = m_oSmartInfo.find(MAKELPARAM(ucAttribIndex, ucDriveIndex));
 	if (pIt != m_oSmartInfo.end())
 		pRet = (ST_SMART_INFO*)pIt->second;
@@ -413,8 +405,6 @@ BOOL CSmartReader::ReadSMARTAttributes(HANDLE hDevice, UCHAR ucDriveIndex)
 	stCIP.irDriveRegs.bCylHighReg = SMART_CYL_HI;
 	stCIP.irDriveRegs.bDriveHeadReg = DRIVE_HEAD_REG;
 	stCIP.irDriveRegs.bCommandReg = SMART_CMD;
-
-	// read SMART attributes
 
 	bRet = DeviceIoControl(
 		hDevice,
@@ -488,7 +478,6 @@ BOOL CSmartReader::ReadSMARTAttributes(HANDLE hDevice, UCHAR ucDriveIndex)
 
 ST_DRIVE_INFO* CSmartReader::GetDriveInfo(BYTE ucDriveIndex)
 {
-	// get drive info
 	return &m_stDrivesInfo[ucDriveIndex];
 }
 

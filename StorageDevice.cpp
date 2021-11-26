@@ -10,6 +10,7 @@ StorageDevice::~StorageDevice()
 {
 }
 
+// Setters for Storage Device attributes
 void StorageDevice::SetDeviceID(string s)
 {
 	strDeviceId = s;
@@ -52,11 +53,12 @@ void StorageDevice::SetMediaType(int i)
 	nMediaType = i;
 }
 
-
+// Flag for if device is SSD
 bool StorageDevice::IsSSD()
 {
 	bool blnSSD = false;
 
+	// Check BusType, MediaType, SpindleSpeed
 	if ((nBusType == 17) && (nMediaType == 4) && (nSpindleSpeed == 0))
 	{
 		blnSSD = true;
@@ -69,7 +71,7 @@ DiskDrive::DiskDrive()
 {
 }
 
-
+// Setters for Disk Drive attributes
 DiskDrive::~DiskDrive()
 {
 }

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <windows.h>
-#include <Ntdddisk.h>
 #include <devioctl.h>
+#include <Ntdddisk.h>
 
 #include <iostream>
 #include <string>
