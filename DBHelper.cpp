@@ -97,7 +97,7 @@ void DBHelper::Insert(const char* fname, const char* lname, const char* email, c
 {
 	sql::PreparedStatement* pstmt; // Use prepared statement since inserting
 
-	pstmt = con->prepareStatement("INSERT INTO results(serial, model, val196, worst196, val197, worst197, val198, worst198, email, firstname, lastname) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	pstmt = con->prepareStatement("INSERT INTO results(serial, model, val196, worst196, val197, worst197, val198, worst198, email, firstname, lastname) VALUES(?, ?, ?, ?, ?, ?, ?, ?, AES_ENCRYPT(?, 'temp_key'), AES_ENCRYPT(?, 'temp_key'), AES_ENCRYPT(?, 'temp_key'))");
 
 	// Indiviually set columns in database with corresponding values (order matters!)
 
