@@ -274,8 +274,8 @@ void CSmartHDDGUIDlg::OnBnClickedOk()
 			}
 		}
 
+		// SSD drive was detected
 		if (blnSSD)
-			// SSD drive was detected
 		{			
 			continue;
 		}
@@ -295,7 +295,7 @@ void CSmartHDDGUIDlg::OnBnClickedOk()
 		DF_TRACE_LOG(L"Model:  %S", pSectorInfo->sModelNumber);
 		DF_TRACE_LOG(L"Serial: %S", pSectorInfo->sSerialNumber);
 
-		//??
+		// Get Drive information for each relevant drive
 		pDriveInfo = objSmartReader.GetDriveInfo(ucT1);
 
 		// Initialize Smart values
@@ -306,7 +306,9 @@ void CSmartHDDGUIDlg::OnBnClickedOk()
 		int val198 = 0;
 		int worst198 = 0;
 
-		bool blnRetrieved = true;
+		bool bln196 = true;
+		bool bln197 = true;
+		bool bln198 = true;
 
 		// Only iterate through Smart values 196, 197, 198 
 		for (ucT2 = 196; ucT2 < 199; ++ucT2)
@@ -331,39 +333,52 @@ void CSmartHDDGUIDlg::OnBnClickedOk()
 					// If found Smart 196
 					if (ucT2 == 196)
 					{
-						val196 = pSmartInfo->m_dwAttribValue;
+						val196 = pSmartInfo->m_ucValue;
 						worst196 = pSmartInfo->m_ucWorst;
 					}
 					// If found Smart 197
 					else if (ucT2 == 197)
 					{
-						val197 = pSmartInfo->m_dwAttribValue;
+						val197 = pSmartInfo->m_ucValue;
 						worst197 = pSmartInfo->m_ucWorst;
 					}
 					// If found Smart 198
 					else if (ucT2 == 198)
 					{
-						val198 = pSmartInfo->m_dwAttribValue;
+						val198 = pSmartInfo->m_ucValue;
 						worst198 = pSmartInfo->m_ucWorst;
 					}
 				}
 			}
+			// Could not find 196 AND 197 AND 198
 			else
-				// Could not find 196 AND 197 AND 198
 			{
-				blnRetrieved = false;
+				if (ucT2 == 196)
+				{
+					bln196 = false;
+				}
+				else if (ucT2 == 197)
+				{
+					bln197 = false;
+				}
+				else if (ucT2 == 198)
+				{
+					bln198 = false;
+				}
 			}
 		}
 
-		if (!blnRetrieved)
-			// Failed to retrieve all 3 Smart Values: 196, 197, 198
+		// Failed to retrieve all 3 Smart Values: 196, 197, 198
+		if (!bln196 && !bln197 && !bln198)
 		{
 			DF_TRACE_LOG(L"S.M.A.R.T attributes (IDs 196, 197 and 198) could NOT be retrieved from the Physical Drive.");
+
+			MessageBox("Failed to capture S.M.A.R.T attribute values for 196 AND 197 AND 198.", "TeraDrive SMART HDD Data Collection", MB_ICONINFORMATION | MB_OK);
 		}
 		else
 		{
+			// Succesfully retrieved Smart Values: 196, 197, 198
 			try
-				// Succesfully retrieved Smart Values: 196, 197, 198
 			{
 				DBHelper db;
 				
@@ -382,8 +397,6 @@ void CSmartHDDGUIDlg::OnBnClickedOk()
 
 				strcpy_s(szEmail, csEmail.GetLength()+1, csEmail);
 				DF_TRACE_LOG(L"DB Email = %S", szEmail);
-
-				DF_TRACE_LOG(L"BEFORE Database Insert");
 
 				DF_TRACE_LOG(L"First name = %S", szFirstName);
 				DF_TRACE_LOG(L"Last name = %S", szLastName);
@@ -409,14 +422,14 @@ void CSmartHDDGUIDlg::OnBnClickedOk()
 					worst197,
 					val198,
 					worst198);
+
+				MessageBox("Successfully captured and saved S.M.A.R.T data.", "TeraDrive SMART HDD Data Collection", MB_ICONINFORMATION | MB_OK);
+
 			}
 			catch (sql::SQLException& e)
 			{
-				
-
 				DF_TRACE_LOG(L"ERR: SQLException in %S", __FILE__);
 				DF_TRACE_LOG(L"%S on line %S", __FUNCTION__, __LINE__);
-
 			}
 		}
 	}
@@ -425,8 +438,8 @@ void CSmartHDDGUIDlg::OnBnClickedOk()
 	{
 		string s = sd.GetDeviceID();
 
+		// If device is SSD enter this block
 		if (sd.IsSSD())
-			// If device is SSD enter this block
 		{
 			DF_TRACE_LOG(L"");
 
@@ -445,6 +458,8 @@ void CSmartHDDGUIDlg::OnBnClickedOk()
 			}
 
 			DF_TRACE_LOG(L"S.M.A.R.T attributes (IDs 196, 197 and 198) could NOT be retrieved for SSD Drive.");
+
+			MessageBox("Failed to capture S.M.A.R.T attribute values for SSD (NVME) Drive(s).", "TeraDrive SMART HDD Data Collection", MB_ICONINFORMATION | MB_OK);
 		}
 	}
 
