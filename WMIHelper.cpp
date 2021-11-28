@@ -10,6 +10,7 @@ extern CTracer g_objTracer;
 // Use only for calling the specified method once and thats all.
 using namespace std;
 
+// WMIHelper constructor
 WMIHelper::WMIHelper(string strNamespace)
 	: m_spWbemService(NULL)
 {
@@ -19,11 +20,13 @@ WMIHelper::WMIHelper(string strNamespace)
 	InitializeWMI();
 }
 
+// WMIHelper destructor
 WMIHelper::~WMIHelper()
 {
 	//::CoUninitialize();
 }
 
+// Initialize WMI
 HRESULT WMIHelper::InitializeWMI()
 {
 	DF_TRACE_LOG(L"WMIHelper::InitializeWMI() - ENTER");
@@ -154,6 +157,7 @@ HRESULT WMIHelper::InitializeWMI()
 	return hres;
 }
 
+// Use WMI to retrive all phyical disks on machine
 vector<StorageDevice> WMIHelper::Get_MSFT_PhysicalDisk_PropertyValues()
 {
 	DF_TRACE_LOG(L"WMIHelper::Get_MSFT_PhysicalDisk_PropertyValues() - ENTER");
@@ -167,7 +171,7 @@ vector<StorageDevice> WMIHelper::Get_MSFT_PhysicalDisk_PropertyValues()
 	{
 		hr = m_spWbemService->ExecQuery(
 			bstr_t("WQL"),
-			bstr_t("SELECT * FROM MSFT_PhysicalDisk"),
+			bstr_t("SELECT * FROM MSFT_PhysicalDisk"), // Query to select physical devices
 			WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
 			NULL,
 			&sp_WbemEnumerator
@@ -266,7 +270,7 @@ vector<DiskDrive> WMIHelper::Get_Win32_DiskDrive_PropertyValues()
 	{
 		hr = m_spWbemService->ExecQuery(
 			bstr_t("WQL"),
-			bstr_t("SELECT * FROM Win32_DiskDrive"),
+			bstr_t("SELECT * FROM Win32_DiskDrive"), // Query for physical disk drives
 			WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
 			NULL,
 			&sp_WbemEnumerator
