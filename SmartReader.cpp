@@ -9,17 +9,20 @@
 
 extern CTracer g_objTracer;
 
+// SmartReader constructor
 CSmartReader::CSmartReader()
 {
 	InitAll();
 	FillAttribGenericDetails();
 }
 
+// SmartReader destructor
 CSmartReader::~CSmartReader()
 {
 	CloseAll();
 }
 
+// Initialize SmartReader
 VOID CSmartReader::InitAll()
 {
 	m_ucDrivesWithInfo = 0;
