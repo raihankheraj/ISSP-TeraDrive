@@ -25,7 +25,7 @@ BEGIN_MESSAGE_MAP(CSmartHDDGUIApp, CWinApp)
 END_MESSAGE_MAP()
 
 
-// CSmartHDDGUIApp construction
+// CSmartHDDGUIApp constructor
 
 CSmartHDDGUIApp::CSmartHDDGUIApp()
 {
@@ -81,8 +81,11 @@ BOOL CSmartHDDGUIApp::InitInstance()
 	
 	m_pMainWnd = &dlg;
 
+	// Returns which button user pressed (OK or Cancel)
 	INT_PTR nResponse2 = dlg.DoModal();
-
+	
+	
+	// Handling button responses ( OK or Cancel)
 	if (nResponse2 == IDOK)
 	{
 		// TODO: Place code here to handle when the dialog is
@@ -111,6 +114,8 @@ BOOL CSmartHDDGUIApp::InitInstance()
 		delete pShellManager;
 	}
 
+	
+	
 #if !defined(_AFXDLL) && !defined(_AFX_NO_MFC_CONTROLS_IN_DIALOGS)
 	ControlBarCleanUp();
 #endif
