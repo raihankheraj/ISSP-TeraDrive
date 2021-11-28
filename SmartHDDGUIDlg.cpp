@@ -30,6 +30,8 @@ extern CTracer g_objTracer;
 
 using namespace::std;
 
+
+//About Dialog constructor
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
 {
 }
@@ -50,16 +52,17 @@ END_MESSAGE_MAP()
 // CSmartHDDGUIDlg dialog
 
 
-
+// Smart Main Dialog box constructor
 CSmartHDDGUIDlg::CSmartHDDGUIDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_SMARTHDDGUI_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
+
+// Do data exchange with edit boxes: firstname, lastname, email
 void CSmartHDDGUIDlg::DoDataExchange(CDataExchange* pDX)
-{
-	// Do data exchange with edit boxes: firstname, lastname, email
+{	
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_FIRSTNAME, edtBoxFirstName);
 	DDX_Control(pDX, IDC_EDIT_LASTNAME, edtBoxLastName);
@@ -76,6 +79,8 @@ END_MESSAGE_MAP()
 
 // CSmartHDDGUIDlg message handlers
 
+	
+// Connects About dialog box to main dialog	
 BOOL CSmartHDDGUIDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -110,6 +115,8 @@ BOOL CSmartHDDGUIDlg::OnInitDialog()
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
+
+// Alt + F4 also launches About page
 void CSmartHDDGUIDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
@@ -160,6 +167,7 @@ HCURSOR CSmartHDDGUIDlg::OnQueryDragIcon()
 }
 
 
+// OK button event handler (On click) -- About dialog box
 void CAboutDlg::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here
@@ -172,7 +180,7 @@ void CSmartHDDGUIDlg::OnBnClickedBtnBack()
 	// TODO: Add your control notification handler code here
 }
 
-
+// OK button event handler (On click) - Main dialog box
 void CSmartHDDGUIDlg::OnBnClickedOk()
 	// Function called when OK button clicked on GUI
 {
@@ -306,7 +314,7 @@ void CSmartHDDGUIDlg::OnBnClickedOk()
 		int val198 = 0;
 		int worst198 = 0;
 
-		bool blnRetrieved = true;
+		bool blnRetrieved = true; // 
 
 		// Only iterate through Smart values 196, 197, 198 
 		for (ucT2 = 196; ucT2 < 199; ++ucT2)
