@@ -30,12 +30,13 @@ extern CTracer g_objTracer;
 
 using namespace::std;
 
+// About Dialog box constructor
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
 {
 }
 
 
-// Setup passing of firstname, lastname, and email
+// Setup Data exchange for the controls in the About Dialog box
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
@@ -46,20 +47,18 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CAboutDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
-
+//
 // CSmartHDDGUIDlg dialog
-
-
-
+//
 CSmartHDDGUIDlg::CSmartHDDGUIDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_SMARTHDDGUI_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
+// Do data exchange with edit boxes: firstname, lastname, email
 void CSmartHDDGUIDlg::DoDataExchange(CDataExchange* pDX)
 {
-	// Do data exchange with edit boxes: firstname, lastname, email
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_FIRSTNAME, edtBoxFirstName);
 	DDX_Control(pDX, IDC_EDIT_LASTNAME, edtBoxLastName);
@@ -74,8 +73,7 @@ BEGIN_MESSAGE_MAP(CSmartHDDGUIDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CSmartHDDGUIDlg message handlers
-
+// CSmartHDDGUIDlg On Initialization message handler
 BOOL CSmartHDDGUIDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -110,6 +108,7 @@ BOOL CSmartHDDGUIDlg::OnInitDialog()
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
+// CSmartHDDGUIDlg On System Menut message handler
 void CSmartHDDGUIDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
@@ -126,7 +125,6 @@ void CSmartHDDGUIDlg::OnSysCommand(UINT nID, LPARAM lParam)
 // If you add a minimize button to your dialog, you will need the code below
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
-
 void CSmartHDDGUIDlg::OnPaint()
 {
 	if (IsIconic())
@@ -159,7 +157,7 @@ HCURSOR CSmartHDDGUIDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
+// On button click handler for the About Dialog Box
 void CAboutDlg::OnBnClickedOk()
 {
 	// TODO: Add your control notification handler code here
@@ -173,8 +171,8 @@ void CSmartHDDGUIDlg::OnBnClickedBtnBack()
 }
 
 
+// On Button OK click handler for the Main Dialog box
 void CSmartHDDGUIDlg::OnBnClickedOk()
-	// Function called when OK button clicked on GUI
 {
 	DF_TRACE_LOG(L"::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 	DF_TRACE_LOG(L"ENTER");
@@ -193,27 +191,27 @@ void CSmartHDDGUIDlg::OnBnClickedOk()
 	}
 
 	if (edtBoxLastName.GetWindowTextLength() == 0)
-		// Check user entry for last name not empty
 	{
+		// Check user entry for last name not empty
 		MessageBox("Last name cannot be empty. Please enter the Last name.", "TeraDrive SMART HDD Data Collection", MB_ICONERROR | MB_OK);
 		return;
 	}
 	else
-		// Save user entry for last name so it can be sent to the database
 	{
+		// Save user entry for last name so it can be sent to the database
 		edtBoxLastName.GetWindowText(csLastName);
 		DF_TRACE_LOG(L"From Control Last Name=%S", csLastName.GetString());
 	}
 
 	if (edtBoxEmail.GetWindowTextLength() == 0)
-		// Check user entry for email not empty
 	{
-		MessageBox("Email cannot be empty. Please enter the Email in correct format e.g. support@email.com", "TeraDrive SMART HDD Data Collection", MB_ICONERROR | MB_OK);
+		// Check user entry for email not empty	
+		MessageBox("Email cannot be empty. Please enter the Emain correct format e.g. support@email.com", "TeraDrive SMART HDD Data Collection", MB_ICONERROR | MB_OK);
 		return;
 	}
 	else
-		// Save user entry for email so it can be sent to the database
 	{
+		// Save user entry for email so it can be sent to the database
 		edtBoxEmail.GetWindowText(csEmail);
 		DF_TRACE_LOG(L"From Control Email=%S", csEmail.GetString());
 	}
@@ -286,11 +284,6 @@ void CSmartHDDGUIDlg::OnBnClickedOk()
 		DF_TRACE_LOG(L"");
 
 		DF_TRACE_LOG(L">>>>>>>>>>>>>>>  Drive %d  <<<<<<<<<<<<<<<<", ucT1);
-
-		//std::cout << "Model:  " << pSectorInfo->sModelNumber << std::endl;
-		//std::cout << "Serial: " << pSectorInfo->sSerialNumber << std::endl;
-		//std::cout << "Cache = " << pSectorInfo->wBufferSize << std::endl;
-		//std::cout << "Buffer = " << pSectorInfo->wBufferType << std::endl;
 
 		DF_TRACE_LOG(L"Model:  %S", pSectorInfo->sModelNumber);
 		DF_TRACE_LOG(L"Serial: %S", pSectorInfo->sSerialNumber);
@@ -387,8 +380,6 @@ void CSmartHDDGUIDlg::OnBnClickedOk()
 				char szLastName[MAX_PATH] = { 0 };
 				char szEmail[MAX_PATH] = { 0 };
 
-				DF_TRACE_LOG(L"Reached after sz var stuff");
-
 				strcpy_s(szFirstName, csFirstName.GetLength()+1, csFirstName);
 				DF_TRACE_LOG(L"DB First name = %S", szFirstName);
 
@@ -466,6 +457,5 @@ void CSmartHDDGUIDlg::OnBnClickedOk()
 	DF_TRACE_LOG(L"EXIT");
 	DF_TRACE_LOG(L"::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 
-	// TODO: Add your control notification handler code here
 	CDialogEx::OnOK();
 }
