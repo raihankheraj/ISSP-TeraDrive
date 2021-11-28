@@ -1,11 +1,12 @@
 #include "StorageDevice.h"
 
+// Storage Device construtor
 StorageDevice::StorageDevice()
 	: nBusType(0), nHealthStatus(0), nSpindleSpeed(0), nMediaType(0)
 {
 }
 
-
+// Storage Device destructor
 StorageDevice::~StorageDevice()
 {
 }
@@ -67,15 +68,18 @@ bool StorageDevice::IsSSD()
 	return blnSSD;
 }
 
+// Disk Drive constructor
 DiskDrive::DiskDrive()
 {
 }
 
-// Setters for Disk Drive attributes
+// Disk Drive destructor
 DiskDrive::~DiskDrive()
 {
 }
 
+
+// Disk Drive setters
 void DiskDrive::SetDeviceID(string s)
 {
 	strDeviceId = s;
