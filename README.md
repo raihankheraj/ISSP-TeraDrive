@@ -2,7 +2,7 @@
 ACIT 3900/4900 ISSP TeraDrive Code repo
 
 SmartHDD GUI
-Created by: 
+Created by: Raihan Kheraj, Aron Yang, Liam Kneblik, Mathew Vu, Stuart Molnar, Jianfie Liu
 
 Our software program SmartHDD GUI was created using Visual Studio and c++. The solution was built with Release x86 configuration. The program retrieves SMART values 197, 197, 198 for HDD only in Windows environments. If it cannot retrieve all 3, the entry will not be saved in the database.
 TeraDrive requested this software tool in order to gain insight on customer HDDs before providing extended warranty. 
